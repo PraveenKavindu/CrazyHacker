@@ -1,9 +1,9 @@
-# Thanks to @AvinashReddy3108 for this plugin
-
 """
+YouTube Downloader Creat by @PRAVEEN_KAVINDU
+@CHATHURANGA_91
 Audio and video downloader using Youtube-dl
-.yta To Download in mp3 format
-.ytv To Download in mp4 format
+.ym To Download in mp3 format
+.yv To Download in mp4 format
 """
 
 import os
@@ -79,13 +79,13 @@ def time_formatter(milliseconds: int) -> str:
     return tmp[:-2]
 
 
-@borg.on(admin_cmd(pattern="yt(a|v) (.*)"))
-@borg.on(sudo_cmd(pattern="yt(a|v) (.*)", allow_sudo=True))
+@borg.on(admin_cmd(pattern="y(m|v) (.*)"))
+@borg.on(sudo_cmd(pattern="y(m|v) (.*)", allow_sudo=True))
 async def download_video(v_url):
     """ For .ytdl command, download media from YouTube and many other sites. """
     url = v_url.pattern_match.group(2)
     type = v_url.pattern_match.group(1).lower()
-    v_url = await edit_or_reply(v_url, "`Preparing to download...`")
+    v_url = await edit_or_reply(v_url, "`CrazyHackerBot is downloading..`")
     if type == "a":
         opts = {
             'format':
@@ -144,7 +144,7 @@ async def download_video(v_url):
         song = False
         video = True
     try:
-        await v_url.edit("`Fetching data, please wait..`")
+        await v_url.edit("`Crazy Downloading, please wait..`")
         with YoutubeDL(opts) as ytdl:
             ytdl_data = ytdl.extract_info(url)
     except DownloadError as DE:
@@ -178,7 +178,7 @@ async def download_video(v_url):
         return
     c_time = time.time()
     if song:
-        await v_url.edit(f"`Preparing to upload song:`\
+        await v_url.edit(f"`CrazyHacker is uploading song:`\
         \n**{ytdl_data['title']}**\
         \nby *{ytdl_data['uploader']}*")
         await borg.send_file(
@@ -192,12 +192,12 @@ async def download_video(v_url):
             ],
             progress_callback=lambda d, t: asyncio.get_event_loop(
             ).create_task(
-                progress(d, t, v_url, c_time, "Uploading..",
+                progress(d, t, v_url, c_time, "CrazyHacker Uploading..",
                          f"{ytdl_data['title']}.mp3")))
         os.remove(f"{ytdl_data['id']}.mp3")
         await v_url.delete()
     elif video:
-        await v_url.edit(f"`Preparing to upload video:`\
+        await v_url.edit(f"`CrazyHacker is uploading video:`\
         \n**{ytdl_data['title']}**\
         \nby *{ytdl_data['uploader']}*")
         await borg.send_file(
@@ -207,7 +207,7 @@ async def download_video(v_url):
             caption=ytdl_data['title'],
             progress_callback=lambda d, t: asyncio.get_event_loop(
             ).create_task(
-                progress(d, t, v_url, c_time, "Uploading..",
+                progress(d, t, v_url, c_time, "CrazyHacker Uploading..",
                          f"{ytdl_data['title']}.mp4")))
         os.remove(f"{ytdl_data['id']}.mp4")
         await v_url.delete()
