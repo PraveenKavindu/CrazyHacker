@@ -193,7 +193,7 @@ async def insult(e):
 @borg.on(admin_cmd(outgoing=True, pattern="repo$"))
 async def source(e):
     await e.edit(
-        "Click [here](https://github.com/sandy1709/catuserbot) to open this lit af repo."
+        "Click [here](https://github.com/PraveenKavindu/CrazyHacker) to open this lit af repo."
     )
 
 
