@@ -27,13 +27,13 @@ async def amireallyalive(alive):
     if alive.reply_to_msg_id:
         reply_to_id = await alive.get_reply_message()
     if CAT_IMG:
-        cat_caption = f"__**✮ MY BOT IS RUNNING SUCCESFULLY ✮**__\n\n"
+        cat_caption = f"__**✮ CRAZYHACKER IS RUNNING SUCCESFULLY ✮**__\n\n"
         cat_caption += f"**✧ Database :** `{check_sgnirts}`\n"
         cat_caption += f"**✧ Telethon version :** `{version.__version__}\n`"
-        cat_caption += f"**✧ Catuserbot Version :** `{catversion}`\n"
+        cat_caption += f"**✧ CrazyHackerbot Version :** `{catversion}`\n"
         cat_caption += f"**✧ Python Version :** `{python_version()}\n`"
         cat_caption += f"**✧ Uptime :** `{uptime}\n`"
-        cat_caption += f"**✧ My peru Master:** [{DEFAULTUSER}](tg://user?id={hmm})\n"
+        cat_caption += f"**✧ My Crazy Master:** [{DEFAULTUSER}](tg://user?id={hmm})\n"
         await borg.send_file(
             alive.chat_id, CAT_IMG, caption=cat_caption, reply_to=reply_to_id
         )
@@ -41,13 +41,13 @@ async def amireallyalive(alive):
     else:
         await edit_or_reply(
             alive,
-            f"__**✮ MY BOT IS RUNNING SUCCESFULLY ✮**__\n\n"
+            f"__**✮ CRAZYHACKER IS RUNNING SUCCESFULLY ✮**__\n\n"
             f"**✧ Database :** `{check_sgnirts}`\n"
             f"**✧ Telethon Version :** `{version.__version__}\n`"
-            f"**✧ Catuserbot Version :** `{catversion}`\n"
+            f"**✧ CrazyHackerbot Version :** `{catversion}`\n"
             f"**✧ Python Version :** `{python_version()}\n`"
             f"**✧ Uptime :** `{uptime}\n`"
-            f"**✧ My Peru Master:** [{DEFAULTUSER}](tg://user?id={hmm})\n",
+            f"**✧ My Crazy Master:** [{DEFAULTUSER}](tg://user?id={hmm})\n",
         )
 
 
@@ -63,9 +63,9 @@ async def amireallyalive(alive):
     hmm = bot.uid
     cat_caption = f"__**Catuserbot is Up and Running**__\n"
     cat_caption += f"**  -Telethon version :** `{version.__version__}\n`"
-    cat_caption += f"**  -Catuserbot Version :** `{catversion}`\n"
+    cat_caption += f"**  -CrazyHackerbot Version :** `{catversion}`\n"
     cat_caption += f"**  -Python Version :** `{python_version()}\n`"
-    cat_caption += f"**  -My peru Master:** [{DEFAULTUSER}](tg://user?id={hmm})\n"
+    cat_caption += f"**  -My Crazy Master:** [{DEFAULTUSER}](tg://user?id={hmm})\n"
     results = await bot.inline_query(tgbotusername, cat_caption)  # pylint:disable=E0602
     await results[0].click(alive.chat_id, reply_to=reply_to_id, hide_via=True)
     await alive.delete()
@@ -95,8 +95,6 @@ async def _(event):
 # the "you can't use this for anything - public or private,
 # unless you know the two prime factors to the number below" license
 # 543935563961418342898620676239017231876605452284544942043082635399903451854594062955
-# വിവരണം അടിച്ചുമാറ്റിക്കൊണ്ട് പോകുന്നവർ
-# ക്രെഡിറ്റ് വെച്ചാൽ സന്തോഷമേ ഉള്ളു..!
 # uniborg
 
 
