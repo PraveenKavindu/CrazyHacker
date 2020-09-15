@@ -4,47 +4,56 @@ Available Commands:
 .clearthumbnail
 .getthumbnail"""
 import os
-import asyncio
 import subprocess
+
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from PIL import Image
-from telethon import events
-from userbot.utils import admin_cmd, humanbytes, progress, time_formatter
+
+from userbot.utils import admin_cmd
 
 thumb_image_path = Config.TMP_DOWNLOAD_DIRECTORY + "/thumb_image.jpg"
+
 
 def get_video_thumb(file, output=None, width=320):
     output = file + ".jpg"
     metadata = extractMetadata(createParser(file))
-    p = subprocess.Popen([
-        'ffmpeg', '-i', file,
-        '-ss', str(int((0, metadata.get('duration').seconds)[metadata.has('duration')] / 2)),
-        # '-filter:v', 'scale={}:-1'.format(width),
-        '-vframes', '1',
-        output,
-    ], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    p = subprocess.Popen(
+        [
+            "ffmpeg",
+            "-i",
+            file,
+            "-ss",
+            str(
+                int((0, metadata.get("duration").seconds)[metadata.has("duration")] / 2)
+            ),
+            # '-filter:v', 'scale={}:-1'.format(width),
+            "-vframes",
+            "1",
+            output,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
     p.communicate()
     if not p.returncode and os.path.lexists(file):
         os.remove(file)
         return output
 
+
 @borg.on(admin_cmd(pattern="savethumbnail"))
 async def _(event):
     if event.fwd_from:
         return
-    mone = await event.edit("Processing ...")
+    await event.edit("Processing ...")
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
     if event.reply_to_msg_id:
         downloaded_file_name = await borg.download_media(
-            await event.get_reply_message(),
-            Config.TMP_DOWNLOAD_DIRECTORY
+            await event.get_reply_message(), Config.TMP_DOWNLOAD_DIRECTORY
         )
         if downloaded_file_name.endswith(".mp4"):
-            downloaded_file_name = get_video_thumb(
-                downloaded_file_name
-            )
+            downloaded_file_name = get_video_thumb(downloaded_file_name)
         metadata = extractMetadata(createParser(downloaded_file_name))
         height = 0
         if metadata.has("height"):
@@ -61,8 +70,8 @@ async def _(event):
         # https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#create-thumbnails
         os.remove(downloaded_file_name)
         await event.edit(
-            "Custom video / file thumbnail saved. " + \
-            "This image will be used in the upload, till `.clearthumbnail`."
+            "Custom video / file thumbnail saved. "
+            + "This image will be used in the upload, till `.clearthumbnail`."
         )
     else:
         await event.edit("Reply to a photo to save custom thumbnail")
@@ -81,14 +90,13 @@ async def _(event):
 async def _(event):
     if event.fwd_from:
         return
-    mone = await event.edit("processing..........")
+    await event.edit("processing..........")
     if event.reply_to_msg_id:
         r = await event.get_reply_message()
         try:
             a = await borg.download_media(
-                r.media.document.thumbs[0],
-                Config.TMP_DOWNLOAD_DIRECTORY
-                )
+                r.media.document.thumbs[0], Config.TMP_DOWNLOAD_DIRECTORY
+            )
         except Exception as e:
             await event.edit(str(e))
         try:
@@ -111,7 +119,7 @@ async def _(event):
             caption=caption_str,
             force_document=False,
             allow_cache=False,
-            reply_to=event.message.id
+            reply_to=event.message.id,
         )
         await event.edit(caption_str)
     else:

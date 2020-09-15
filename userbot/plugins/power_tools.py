@@ -5,10 +5,9 @@ Available Commands:
 # This Source Code Form is subject to the terms of the GNU
 # General Public License, v.3.0. If a copy of the GPL was not distributed with this
 # file, You can obtain one at https://www.gnu.org/licenses/gpl-3.0.en.html
-from telethon import events
-import asyncio
 import os
 import sys
+
 from userbot.utils import admin_cmd
 
 
@@ -21,7 +20,9 @@ async def _(event):
     # await asyncio.sleep(2)
     # await event.edit("Restarting [███]...\n`.ping` me or `.help` to check if I am online after a lil bit.")
     # await asyncio.sleep(2)
-    await event.edit("Restarted. `.ping` me or `.help` to check if I am online, actually it takes 1-2 min for restarting")
+    await event.edit(
+        "Restarted. `.ping` me or `.help` to check if I am online, actually it takes 1-2 min for restarting"
+    )
     await borg.disconnect()
     # https://archive.is/im3rt
     os.execl(sys.executable, sys.executable, *sys.argv)

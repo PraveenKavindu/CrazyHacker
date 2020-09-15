@@ -1,18 +1,17 @@
 """FFMpeg for @UniBorg
 """
 import asyncio
-import io
 import os
 import time
 from datetime import datetime
-from hachoir.metadata import extractMetadata
-from hachoir.parser import createParser
-from ..utils import admin_cmd, sudo_cmd, edit_or_reply, progress
+
+from ..utils import admin_cmd, edit_or_reply, progress, sudo_cmd
 
 FF_MPEG_DOWN_LOAD_MEDIA_PATH = "uniborg.media.ffmpeg"
 
+
 @borg.on(admin_cmd(pattern="ffmpegsave$"))
-@borg.on(sudo_cmd(pattern="ffmpegsave$",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="ffmpegsave$", allow_sudo=True))
 async def ff_mpeg_trim_cmd(event):
     if event.fwd_from:
         return
@@ -28,28 +27,39 @@ async def ff_mpeg_trim_cmd(event):
                     reply_message,
                     FF_MPEG_DOWN_LOAD_MEDIA_PATH,
                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                      progress(d, t, event, c_time, "trying to download")
-                    )
+                        progress(d, t, event, c_time, "trying to download")
+                    ),
                 )
             except Exception as e:  # pylint:disable=C0103,W0703
                 await event.edit(str(e))
             else:
                 end = datetime.now()
                 ms = (end - start).seconds
-                await edit_or_reply(event ,"Downloaded to `{}` in {} seconds.".format(downloaded_file_name, ms))
+                await edit_or_reply(
+                    event,
+                    "Downloaded to `{}` in {} seconds.".format(
+                        downloaded_file_name, ms
+                    ),
+                )
         else:
-            await edit_or_reply(event ,"Reply to a Telegram media file")
+            await edit_or_reply(event, "Reply to a Telegram media file")
     else:
-        await edit_or_reply(event ,f"a media file already exists in path. Please remove the media and try again!\n`.exec rm {FF_MPEG_DOWN_LOAD_MEDIA_PATH}`")
+        await edit_or_reply(
+            event,
+            f"a media file already exists in path. Please remove the media and try again!\n`.exec rm {FF_MPEG_DOWN_LOAD_MEDIA_PATH}`",
+        )
 
 
 @borg.on(admin_cmd(pattern="ffmpegtrim"))
-@borg.on(sudo_cmd(pattern="ffmpegtrim",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="ffmpegtrim", allow_sudo=True))
 async def ff_mpeg_trim_cmd(event):
     if event.fwd_from:
         return
     if not os.path.exists(FF_MPEG_DOWN_LOAD_MEDIA_PATH):
-        await edit_or_reply(event ,f"a media file needs to be downloaded, and saved to the following path: `{FF_MPEG_DOWN_LOAD_MEDIA_PATH}`")
+        await edit_or_reply(
+            event,
+            f"a media file needs to be downloaded, and saved to the following path: `{FF_MPEG_DOWN_LOAD_MEDIA_PATH}`",
+        )
         return
     current_message_text = event.raw_text
     cmt = current_message_text.split(" ")
@@ -62,7 +72,7 @@ async def ff_mpeg_trim_cmd(event):
             FF_MPEG_DOWN_LOAD_MEDIA_PATH,
             Config.TMP_DOWNLOAD_DIRECTORY,
             start_time,
-            end_time
+            end_time,
         )
         logger.info(o)
         try:
@@ -76,8 +86,8 @@ async def ff_mpeg_trim_cmd(event):
                 allow_cache=False,
                 reply_to=event.message.id,
                 progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                   progress(d, t, event, c_time, "trying to upload")
-                )
+                    progress(d, t, event, c_time, "trying to upload")
+                ),
             )
             os.remove(o)
         except Exception as e:
@@ -86,9 +96,7 @@ async def ff_mpeg_trim_cmd(event):
         # output should be image
         cmd, start_time = cmt
         o = await take_screen_shot(
-            FF_MPEG_DOWN_LOAD_MEDIA_PATH,
-            Config.TMP_DOWNLOAD_DIRECTORY,
-            start_time
+            FF_MPEG_DOWN_LOAD_MEDIA_PATH, Config.TMP_DOWNLOAD_DIRECTORY, start_time
         )
         logger.info(o)
         try:
@@ -102,8 +110,8 @@ async def ff_mpeg_trim_cmd(event):
                 allow_cache=False,
                 reply_to=event.message.id,
                 progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                   progress(d, t, event, c_time, "trying to upload")
-                )
+                    progress(d, t, event, c_time, "trying to upload")
+                ),
             )
             os.remove(o)
         except Exception as e:
@@ -115,10 +123,10 @@ async def ff_mpeg_trim_cmd(event):
     ms = (end - start).seconds
     await event.edit(f"Completed Process in {ms} seconds")
 
+
 async def take_screen_shot(video_file, output_directory, ttl):
     # https://stackoverflow.com/a/13891070/4723940
-    out_put_file_name = output_directory + \
-        "/" + str(time.time()) + ".jpg"
+    out_put_file_name = output_directory + "/" + str(time.time()) + ".jpg"
     file_genertor_command = [
         "ffmpeg",
         "-ss",
@@ -127,7 +135,7 @@ async def take_screen_shot(video_file, output_directory, ttl):
         video_file,
         "-vframes",
         "1",
-        out_put_file_name
+        out_put_file_name,
     ]
     # width = "90"
     process = await asyncio.create_subprocess_exec(
@@ -146,12 +154,13 @@ async def take_screen_shot(video_file, output_directory, ttl):
     logger.info(t_response)
     return None
 
+
 # https://github.com/Nekmo/telegram-upload/blob/master/telegram_upload/video.py#L26
+
 
 async def cult_small_video(video_file, output_directory, start_time, end_time):
     # https://stackoverflow.com/a/13891070/4723940
-    out_put_file_name = output_directory + \
-        "/" + str(round(time.time())) + ".mp4"
+    out_put_file_name = output_directory + "/" + str(round(time.time())) + ".mp4"
     file_genertor_command = [
         "ffmpeg",
         "-i",
@@ -164,7 +173,7 @@ async def cult_small_video(video_file, output_directory, start_time, end_time):
         "1",
         "-strict",
         "-2",
-        out_put_file_name
+        out_put_file_name,
     ]
     process = await asyncio.create_subprocess_exec(
         *file_genertor_command,

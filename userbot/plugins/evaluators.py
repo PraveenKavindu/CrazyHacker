@@ -1,29 +1,26 @@
 """Execute GNU/Linux commands inside Telegram
 Syntax: .exec Code"""
+import asyncio
 import io
 import sys
 import time
-import inspect
-import asyncio
 import traceback
-import subprocess
+
 from .. import CMD_HELP
-from telethon import events, errors, functions, types
-from ..utils import admin_cmd, sudo_cmd, edit_or_reply
-from telethon.errors import MessageEmptyError, MessageTooLongError, MessageNotModifiedError
+from ..utils import admin_cmd, edit_or_reply, sudo_cmd
+
 
 @borg.on(admin_cmd(pattern="bash ?(.*)"))
-@borg.on(sudo_cmd(pattern="bash ?(.*)",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="bash ?(.*)", allow_sudo=True))
 async def _(event):
     if event.fwd_from or event.via_bot_id:
         return
-    DELAY_BETWEEN_EDITS = 0.3
     PROCESS_RUN_TIME = 100
     cmd = event.pattern_match.group(1)
     reply_to_id = event.message.id
     if event.reply_to_msg_id:
         reply_to_id = event.reply_to_msg_id
-    start_time = time.time() + PROCESS_RUN_TIME
+    time.time() + PROCESS_RUN_TIME
     process = await asyncio.create_subprocess_shell(
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
@@ -38,24 +35,24 @@ async def _(event):
                 force_document=True,
                 allow_cache=False,
                 caption=cmd,
-                reply_to=reply_to_id
+                reply_to=reply_to_id,
             )
             await event.delete()
     else:
-        await edit_or_reply(event ,OUTPUT)
-        
+        await edit_or_reply(event, OUTPUT)
+
+
 @borg.on(admin_cmd(pattern="exec ?(.*)"))
-@borg.on(sudo_cmd(pattern="exec ?(.*)",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="exec ?(.*)", allow_sudo=True))
 async def _(event):
     if event.fwd_from or event.via_bot_id:
         return
-    DELAY_BETWEEN_EDITS = 0.3
     PROCESS_RUN_TIME = 100
     cmd = event.pattern_match.group(1)
     reply_to_id = event.message.id
     if event.reply_to_msg_id:
         reply_to_id = event.reply_to_msg_id
-    start_time = time.time() + PROCESS_RUN_TIME
+    time.time() + PROCESS_RUN_TIME
     process = await asyncio.create_subprocess_shell(
         cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
@@ -79,14 +76,15 @@ async def _(event):
                 force_document=True,
                 allow_cache=False,
                 caption=cmd,
-                reply_to=reply_to_id
+                reply_to=reply_to_id,
             )
             await event.delete()
     else:
-        await edit_or_reply(event ,OUTPUT)
+        await edit_or_reply(event, OUTPUT)
+
 
 @borg.on(admin_cmd(pattern="eval"))
-@borg.on(sudo_cmd(pattern="eval",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="eval", allow_sudo=True))
 async def _(event):
     if event.fwd_from or event.via_bot_id:
         return
@@ -94,7 +92,7 @@ async def _(event):
     reply_to_id = event.message.id
     if event.reply_to_msg_id:
         reply_to_id = event.reply_to_msg_id
-    event = await edit_or_reply(event ,"Processing ...")
+    event = await edit_or_reply(event, "Processing ...")
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -127,25 +125,26 @@ async def _(event):
                 force_document=True,
                 allow_cache=False,
                 caption=cmd,
-                reply_to=reply_to_id
+                reply_to=reply_to_id,
             )
             await event.delete()
     else:
         await event.edit(final_output)
 
-        
+
 async def aexec(code, event):
-    exec(f'async def __aexec(event): ' +
-        ''.join(f'\n {l}' for l in code.split('\n'))
-        )
-    return await locals()['__aexec'](event)
-        
-CMD_HELP.update({
-    "evaluators":"**Synatax : **.eval <expr>`:\
+    exec(f"async def __aexec(event): " + "".join(f"\n {l}" for l in code.split("\n")))
+    return await locals()["__aexec"](event)
+
+
+CMD_HELP.update(
+    {
+        "evaluators": "**Synatax : **.eval <expr>`:\
      \n**Usage : **Execute Python script.\
      \n\n**Synatax : **.exec <command>`:\
      \n**Usage : **Execute a bash command on catuserbot server and shows details.\
      \n\n**Synatax : **.bash <command>`:\
      \n**Usage : **Execute a bash command on catuserbot server and  easy to copy output\
      "
-})
+    }
+)

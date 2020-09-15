@@ -13,7 +13,8 @@ credits to @mrconfused and @sandy1709
 #   You should have received a copy of the GNU Affero General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from sqlalchemy import Column, String
-from userbot.plugins.sql_helper import SESSION, BASE
+
+from userbot.plugins.sql_helper import BASE, SESSION
 
 
 class GBan(BASE):
@@ -32,7 +33,7 @@ GBan.__table__.create(checkfirst=True)
 def is_gbanned(chat_id):
     try:
         return SESSION.query(GBan).filter(GBan.chat_id == str(chat_id)).one()
-    except:
+    except BaseException:
         return None
     finally:
         SESSION.close()

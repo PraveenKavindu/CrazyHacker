@@ -14,9 +14,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from geopy.geocoders import Nominatim
-from userbot.utils import admin_cmd, sudo_cmd
 from telethon.tl import types
-from userbot import CMD_HELP 
+
+from userbot import CMD_HELP
+from userbot.utils import admin_cmd, sudo_cmd
 
 
 @borg.on(admin_cmd(pattern="gps ?(.*)"))
@@ -40,19 +41,14 @@ async def gps(event):
         lon = geoloc.longitude
         lat = geoloc.latitude
         await reply_to_id.reply(
-            input_str,
-            file=types.InputMediaGeoPoint(
-                types.InputGeoPoint(
-                    lat, lon
-                )
-            )
+            input_str, file=types.InputMediaGeoPoint(types.InputGeoPoint(lat, lon))
         )
         await event.delete()
     else:
         await event.edit("i coudn't find it")
-        
-        
-@borg.on(sudo_cmd(pattern="gps ?(.*)", allow_sudo = True))
+
+
+@borg.on(sudo_cmd(pattern="gps ?(.*)", allow_sudo=True))
 async def gps(event):
     if event.fwd_from:
         return
@@ -73,19 +69,17 @@ async def gps(event):
         lon = geoloc.longitude
         lat = geoloc.latitude
         await reply_to_id.reply(
-            input_str,
-            file=types.InputMediaGeoPoint(
-                types.InputGeoPoint(
-                    lat, lon
-                )
-            )
+            input_str, file=types.InputMediaGeoPoint(types.InputGeoPoint(lat, lon))
         )
         await cat.delete()
     else:
         await cat.edit("i coudn't find it")
 
-        
-CMD_HELP.update({"gps": "`.gps` <location name> :\
+
+CMD_HELP.update(
+    {
+        "gps": "`.gps` <location name> :\
       \nUSAGE: sends you the given location name\
       "
-})           
+    }
+)

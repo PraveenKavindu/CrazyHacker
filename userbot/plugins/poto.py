@@ -25,13 +25,11 @@ Type `.poto` for get **All profile pics of that User**
 \nOr type `.poto (number)` to get the **desired number of photo of a User** .
 """
 
-import logging
-from userbot.utils import admin_cmd
-from telethon.tl.functions.photos import GetUserPhotosRequest
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import MessageEntityMentionName
-from telethon.utils import get_input_location
 import asyncio
+import logging
+
+from userbot.utils import admin_cmd
+
 logger = logging.getLogger(__name__)
 
 if 1 == 1:
@@ -67,7 +65,9 @@ if 1 == 1:
                     if u is True:
                         photo = await event.client.download_profile_photo(user.sender)
                     else:
-                        photo = await event.client.download_profile_photo(event.input_chat)
+                        photo = await event.client.download_profile_photo(
+                            event.input_chat
+                        )
                     await event.client.send_file(event.chat_id, photo)
                 except a:
                     await event.edit("**This user has no photos!**")
@@ -78,9 +78,9 @@ if 1 == 1:
                 if id <= 0:
                     await event.edit("```number Invalid!``` **Are you Comedy Me ?**")
                     return
-            except:
-                 await event.edit("Are you comedy me ?")
-                 return
+            except BaseException:
+                await event.edit("Are you comedy me ?")
+                return
             if int(id) <= (len(photos)):
                 send_photos = await event.client.download_media(photos[id - 1])
                 await event.client.send_file(event.chat_id, send_photos)

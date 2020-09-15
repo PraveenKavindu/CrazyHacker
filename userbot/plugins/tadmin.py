@@ -1,17 +1,14 @@
 """
-idea from lynda and rose bot 
+idea from lynda and rose bot
 made by @mrconfused
 """
-from telethon.errors import (BadRequestError, ChatAdminRequiredError, UserAdminInvalidError)
-from telethon.errors.rpcerrorlist import (UserIdInvalidError, MessageTooLongError)
-from telethon.tl.functions.channels import (EditAdminRequest, EditBannedRequest, EditPhotoRequest)
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.functions.messages import UpdatePinnedMessageRequest, GetDialogsRequest
-from telethon.tl.types import (ChannelParticipantsAdmins, ChatAdminRights,   ChatBannedRights, MessageEntityMentionName )
-from userbot import CMD_HELP, bot 
-from userbot.utils import errors_handler, admin_cmd
-from telethon import events, errors, functions, types
+from telethon.errors import BadRequestError
+from telethon.errors.rpcerrorlist import UserIdInvalidError
+from telethon.tl.functions.channels import EditBannedRequest
+from telethon.tl.types import ChatBannedRights, MessageEntityMentionName
+
 from userbot.plugins import extract_time
+from userbot.utils import admin_cmd, errors_handler
 
 if Config.PRIVATE_GROUP_BOT_API_ID is None:
     BOTLOG = False
@@ -23,6 +20,7 @@ else:
 NO_ADMIN = "`I am not an admin nub nibba!`"
 NO_PERM = "`I don't have sufficient permissions! This is so sed. Alexa play despacito`"
 NO_SQL = "`Running on Non-SQL mode!`"
+
 
 @borg.on(admin_cmd(pattern=r"tmute(?: |$)(.*)"))
 @errors_handler
@@ -40,9 +38,9 @@ async def tmuter(catty):
     else:
         return
     if reason:
-        reason = reason.split(' ', 1)
+        reason = reason.split(" ", 1)
         hmm = len(reason)
-        if hmm ==2:
+        if hmm == 2:
             cattime = reason[0]
             reason = reason[1]
         else:
@@ -52,36 +50,56 @@ async def tmuter(catty):
         await catty.edit("you havent mentioned time check `.info tadmin`")
         return
     self_user = await catty.client.get_me()
-    ctime = await extract_time(catty , cattime)
+    ctime = await extract_time(catty, cattime)
     if not ctime:
-        await catty.edit(f"Invalid time type specified. Expected m , h , d or w not as {cattime}")
+        await catty.edit(
+            f"Invalid time type specified. Expected m , h , d or w not as {cattime}"
+        )
         return
     if user.id == self_user.id:
         await catty.edit(f"Sorry, I can't mute my self")
         return
     try:
-        await catty.client(EditBannedRequest(catty.chat_id, user.id, ChatBannedRights(until_date=ctime, send_messages=True)))
+        await catty.client(
+            EditBannedRequest(
+                catty.chat_id,
+                user.id,
+                ChatBannedRights(until_date=ctime, send_messages=True),
+            )
+        )
         # Announce that the function is done
         if reason:
-            await catty.edit(f"{user.first_name} was muted in {catty.chat.title}\n"f"Mutted until {cattime}\n"f"Reason:`{reason}`")
+            await catty.edit(
+                f"{user.first_name} was muted in {catty.chat.title}\n"
+                f"Mutted until {cattime}\n"
+                f"Reason:`{reason}`"
+            )
             if BOTLOG:
                 await catty.client.send_message(
-                    BOTLOG_CHATID, "#TMUTE\n"
+                    BOTLOG_CHATID,
+                    "#TMUTE\n"
                     f"USER: [{user.first_name}](tg://user?id={user.id})\n"
                     f"CHAT: {catty.chat.title}(`{catty.chat_id}`)\n"
                     f"MUTTED_UNTILL : `{cattime}`\n"
-                    f"REASON : {reason}")
+                    f"REASON : {reason}",
+                )
         else:
-            await catty.edit(f"{user.first_name} was muted in {catty.chat.title}\n"f"Mutted until {cattime}\n")
+            await catty.edit(
+                f"{user.first_name} was muted in {catty.chat.title}\n"
+                f"Mutted until {cattime}\n"
+            )
             if BOTLOG:
                 await catty.client.send_message(
-                    BOTLOG_CHATID, "#TMUTE\n"
+                    BOTLOG_CHATID,
+                    "#TMUTE\n"
                     f"USER: [{user.first_name}](tg://user?id={user.id})\n"
                     f"CHAT: {catty.chat.title}(`{catty.chat_id}`)\n"
-                    f"MUTTED_UNTILL : `{cattime}`")
+                    f"MUTTED_UNTILL : `{cattime}`",
+                )
         # Announce to logging group
     except UserIdInvalidError:
-            return await catty.edit("`Uh oh my mute logic broke!`")
+        return await catty.edit("`Uh oh my mute logic broke!`")
+
 
 @borg.on(admin_cmd(pattern=r"untmute(?: |$)(.*)"))
 async def unmoot(catty):
@@ -94,7 +112,7 @@ async def unmoot(catty):
         await catty.edit(NO_ADMIN)
         return
     # If admin or creator, inform the user and start unmuting
-    await catty.edit('```Unmuting...```')
+    await catty.edit("```Unmuting...```")
     user = await get_user_from_event(catty)
     user = user[0]
     if user:
@@ -102,16 +120,25 @@ async def unmoot(catty):
     else:
         return
     try:
-       await catty.client(EditBannedRequest(catty.chat_id, user.id, ChatBannedRights(until_date = None , send_messages = None)))
-       await catty.edit("Unmuted Successfully")
+        await catty.client(
+            EditBannedRequest(
+                catty.chat_id,
+                user.id,
+                ChatBannedRights(until_date=None, send_messages=None),
+            )
+        )
+        await catty.edit("Unmuted Successfully")
     except UserIdInvalidError:
-       await catty.edit("`Uh oh my unmute logic broke!`")
-       return
+        await catty.edit("`Uh oh my unmute logic broke!`")
+        return
     if BOTLOG:
-       await catty.client.send_message(
-                BOTLOG_CHATID, "#UNTMUTE\n"
-                f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                f"CHAT: {catty.chat.title}(`{catty.chat_id}`)")
+        await catty.client.send_message(
+            BOTLOG_CHATID,
+            "#UNTMUTE\n"
+            f"USER: [{user.first_name}](tg://user?id={user.id})\n"
+            f"CHAT: {catty.chat.title}(`{catty.chat_id}`)",
+        )
+
 
 @borg.on(admin_cmd("tban(?: |$)(.*)"))
 @errors_handler
@@ -129,9 +156,9 @@ async def ban(catty):
     else:
         return
     if reason:
-        reason = reason.split(' ', 1)
+        reason = reason.split(" ", 1)
         hmm = len(reason)
-        if hmm ==2:
+        if hmm == 2:
             cattime = reason[0]
             reason = reason[1]
         else:
@@ -141,17 +168,24 @@ async def ban(catty):
         await catty.edit("you havent mentioned time check `.info tadmin`")
         return
     self_user = await catty.client.get_me()
-    ctime = await extract_time(catty , cattime)
+    ctime = await extract_time(catty, cattime)
     if not ctime:
-        await catty.edit(f"Invalid time type specified. Expected m , h , d or w not as {cattime}")
+        await catty.edit(
+            f"Invalid time type specified. Expected m , h , d or w not as {cattime}"
+        )
         return
     if user.id == self_user.id:
         await catty.edit(f"Sorry, I can't ban my self")
         return
     await catty.edit("`Whacking the pest!`")
     try:
-        await catty.client(EditBannedRequest(catty.chat_id, user.id ,
-                                             ChatBannedRights(until_date=ctime,view_messages=True)))
+        await catty.client(
+            EditBannedRequest(
+                catty.chat_id,
+                user.id,
+                ChatBannedRights(until_date=ctime, view_messages=True),
+            )
+        )
     except BadRequestError:
         await catty.edit(NO_PERM)
         return
@@ -162,32 +196,45 @@ async def ban(catty):
             await reply.delete()
     except BadRequestError:
         await catty.edit(
-            "`I dont have message nuking rights! But still he was banned!`")
+            "`I dont have message nuking rights! But still he was banned!`"
+        )
         return
     # Delete message and then tell that the command
     # is done gracefully
     # Shout out the ID, so that fedadmins can fban later
     if reason:
-        await catty.edit(f"{user.first_name} was banned in {catty.chat.title}\n"f"banned until {cattime}\n"f"Reason:`{reason}`")
+        await catty.edit(
+            f"{user.first_name} was banned in {catty.chat.title}\n"
+            f"banned until {cattime}\n"
+            f"Reason:`{reason}`"
+        )
         if BOTLOG:
             await catty.client.send_message(
-                BOTLOG_CHATID, "#TBAN\n"
+                BOTLOG_CHATID,
+                "#TBAN\n"
                 f"USER: [{user.first_name}](tg://user?id={user.id})\n"
                 f"CHAT: {catty.chat.title}(`{catty.chat_id}`)\n"
-               f"BANNED_UNTILL : `{cattime}`\n"
-                f"REASON : {reason}")
+                f"BANNED_UNTILL : `{cattime}`\n"
+                f"REASON : {reason}",
+            )
     else:
-        await catty.edit(f"{user.first_name} was banned in {catty.chat.title}\n"f"banned until {cattime}\n")
+        await catty.edit(
+            f"{user.first_name} was banned in {catty.chat.title}\n"
+            f"banned until {cattime}\n"
+        )
         if BOTLOG:
             await catty.client.send_message(
-                BOTLOG_CHATID, "#TBAN\n"
+                BOTLOG_CHATID,
+                "#TBAN\n"
                 f"USER: [{user.first_name}](tg://user?id={user.id})\n"
                 f"CHAT: {catty.chat.title}(`{catty.chat_id}`)\n"
-                f"BANNED_UNTILL : `{cattime}`")
-        
+                f"BANNED_UNTILL : `{cattime}`",
+            )
+
+
 async def get_user_from_event(event):
     """ Get the user from argument or replied message. """
-    args = event.pattern_match.group(1).split(' ', 1)
+    args = event.pattern_match.group(1).split(" ", 1)
     extra = None
     if event.reply_to_msg_id:
         previous_message = await event.get_reply_message()
@@ -204,17 +251,17 @@ async def get_user_from_event(event):
             return
         if event.message.entities:
             probable_user_mention_entity = event.message.entities[0]
-            if isinstance(probable_user_mention_entity,
-                          MessageEntityMentionName):
+            if isinstance(probable_user_mention_entity, MessageEntityMentionName):
                 user_id = probable_user_mention_entity.user_id
                 user_obj = await event.client.get_entity(user_id)
                 return user_obj
         try:
             user_obj = await event.client.get_entity(user)
-        except (TypeError, ValueError) as err:
+        except (TypeError, ValueError):
             await event.edit("Could not fetch info of that user.")
             return None
     return user_obj, extra
+
 
 async def get_user_from_id(user, event):
     if isinstance(user, str):

