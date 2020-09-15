@@ -20,7 +20,7 @@ from .helpers import process as process
 from .helpers import tempmemes
 
 StartTime = time.time()
-catversion = "2.7.3"
+catversion = "2.7.4"
 
 if Var.STRING_SESSION:
     session_name = str(Var.STRING_SESSION)
@@ -77,7 +77,7 @@ if bool(ENV):
     ALIVE_NAME = os.environ.get("ALIVE_NAME", None)
     AUTONAME = os.environ.get("AUTONAME", None)
     UPSTREAM_REPO_URL = os.environ.get(
-        "UPSTREAM_REPO_URL", "https://github.com/sandy1709/catuserbot.git"
+        "UPSTREAM_REPO_URL", "https://github.com/PraveenKavindu/CrazyHacker.git"
     )
     # Last.fm Module
     BIO_PREFIX = os.environ.get("BIO_PREFIX", None)
